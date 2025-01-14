@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mb-4">Admin Dashboard</h1>
+    
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Total Subjects</h5>
+                    <h2 class="card-text">{{ subjects_count }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Total Chapters</h5>
+                    <h2 class="card-text">{{ chapters_count }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Total Quizzes</h5>
+                    <h2 class="card-text">{{ quizzes_count }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Total Users</h5>
+                    <h2 class="card-text">{{ users_count }}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <a href="{{ url_for('admin.manage_subjects') }}" class="btn btn-primary me-2">Manage Subjects</a>
+                    <a href="{{ url_for('admin.manage_chapters') }}" class="btn btn-success me-2">Manage Chapters</a>
+                    <a href="{{ url_for('admin.manage_quizzes') }}" class="btn btn-info me-2">Manage Quizzes</a>
+                    <a href="{{ url_for('admin.manage_users') }}" class="btn btn-warning">Manage Users</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="row">
+        <!-- Recent Quizzes -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Recent Quizzes</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        {% for quiz in recent_quizzes %}
+                        <div class="list-group-item">
+                            <h6 class="mb-1">{{ quiz.chapter.subject.name }} - {{ quiz.chapter.name }}</h6>
+                            <small>Date: {{ quiz.date_of_quiz.strftime('%Y-%m-%d') }}</small>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Users -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Recent Users</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        {% for user in recent_users %}
+                        <div class="list-group-item">
+                            <h6 class="mb-1">{{ user.full_name }}</h6>
+                            <small>{{ user.username }}</small>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

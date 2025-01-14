@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Manage Users</h1>
+        <div>
+            <input type="text" id="userSearch" class="form-control" placeholder="Search users...">
+        </div>
+    </div>
+
+    <!-- Users List -->
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped" id="usersTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Full Name</th>
+                            <th>Email</th>
+                            <th>Qualification</th>
+                            <th>Date of Birth</th>
+                            <th>Quizzes Taken</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                        <tr>
+                            <td>{{ user.id }}</td>
+                            <td>{{ user.full_name }}</td>
+                            <td>{{ user.username }}</td>
+                            <td>{{ user.qualification }}</td>
+                            <td>{{ user.dob.strftime('%Y-%m-%d') }}</td>
+                            <td>{{ user.quiz_scores|length }}</td>
+                            <td>
+                                <button class="btn btn-sm btn-info" 
+                                        onclick="viewUserDetails({{ user.id }})"
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#userDetailsModal">
+                                    View Details
+                                </button>
+                                <a href="{{ url_for('admin.delete_user', id=user.id) }}"
+                                   class="btn btn-sm btn-danger"
+                                   onclick="return confirm('Are you sure you want to delete this user?')">
+                                    Delete
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Details Modal -->
+    <div class="modal fade" id="userDetailsModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">User Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="userInfo">
+                        <!-- User details will be loaded here -->
+                    </div>
+                    
+                    <h6 class="mt-4">Quiz History</h6>
+                    <div class="table-responsive">
+                        <table class="table table-sm" id="userQuizHistory">
+                            <thead>
+                                <tr>
+                                    <th>Quiz</th>
+                                    <th>Date</th>
+                                    <th>Score</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Quiz history will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block scripts %}
+<script>
+// Search functionality
+document.getElementById('userSearch').addEventListener('input', function(e) {
+    const searchText = e.target.value.toLowerCase();
+    const table = document.getElementById('usersTable');
+    const rows = table.getElementsByTagName('tr');
+
+    for (let i = 1; i < rows.length; i++) {
+        const row = rows[i];
+        const text = row.textContent.toLowerCase();
+        row.style.display = text.includes(searchText) ? '' : 'none';
+    }
+});
+
+function viewUserDetails(userId) {
+    // This function would be implemented to load user details into the modal
+    fetch(`/admin/api/user/${userId}`)
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('userInfo').innerHTML = `
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Name:</strong> ${data.full_name}</p>
+                        <p><strong>Email:</strong> ${data.username}</p>
+                        <p><strong>Qualification:</strong> ${data.qualification}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Date of Birth:</strong> ${data.dob}</p>
+                        <p><strong>Total Quizzes:</strong> ${data.quiz_scores.length}</p>
+                        <p><strong>Average Score:</strong> ${data.average_score}%</p>
+                    </div>
+                </div>
+            `;
+
+            const quizHistoryTable = document.getElementById('userQuizHistory').getElementsByTagName('tbody')[0];
+            quizHistoryTable.innerHTML = data.quiz_scores.map(score => `
+                <tr>
+                    <td>${score.quiz_name}</td>
+                    <td>${score.date}</td>
+                    <td>${score.score}%</td>
+                </tr>
+            `).join('');
+        });
+}
+</script>
+
+<style>
+#userSearch {
+    min-width: 300px;
+}
+
+.table th {
+    white-space: nowrap;
+}
+</style>
+{% endblock %}
+{% endblock %}
