@@ -1,9 +1,11 @@
+# app.py
 from flask import Flask, render_template
 from flask_login import LoginManager
 from models.models import db, User
 from dotenv import load_dotenv
 from controllers.auth import auth
 from controllers.admin import admin
+from controllers.user import user  # Added user controller
 from werkzeug.security import generate_password_hash
 import os
 
@@ -12,10 +14,13 @@ load_dotenv()
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'your-secret-key')
-aapp.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///quiz_master.db')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///quiz_master.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# Register blueprints
 app.register_blueprint(auth)
 app.register_blueprint(admin)
+app.register_blueprint(user)  # Added user blueprint
 
 # Initialize extensions
 db.init_app(app)
@@ -36,7 +41,7 @@ def init_db():
         if not admin:
             admin = User(
                 username='admin@quizmaster.com',
-                password=generate_password_hash('admin@123'),  # Hashing the password
+                password=generate_password_hash('admin@123'),
                 full_name='Administrator',
                 is_admin=True
             )

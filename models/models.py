@@ -1,3 +1,4 @@
+# models/models.py
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
 from datetime import datetime
@@ -19,14 +20,14 @@ class Subject(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text)
-    chapters = db.relationship('Chapter', backref='subject', lazy=True)
+    chapters = db.relationship('Chapter', backref='subject', cascade='all, delete-orphan', lazy=True)
 
 class Chapter(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text)
     subject_id = db.Column(db.Integer, db.ForeignKey('subject.id'), nullable=False)
-    quizzes = db.relationship('Quiz', backref='chapter', lazy=True)
+    quizzes = db.relationship('Quiz', backref='chapter', cascade='all, delete-orphan', lazy=True)
 
 class Quiz(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -34,8 +35,8 @@ class Quiz(db.Model):
     date_of_quiz = db.Column(db.Date, nullable=False)
     time_duration = db.Column(db.Interval, nullable=False)
     remarks = db.Column(db.Text)
-    questions = db.relationship('Question', backref='quiz', lazy=True)
-    scores = db.relationship('Score', backref='quiz', lazy=True)
+    questions = db.relationship('Question', backref='quiz', cascade='all, delete-orphan', lazy=True)
+    scores = db.relationship('Score', backref='quiz', cascade='all, delete-orphan', lazy=True)
 
 class Question(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -51,6 +52,5 @@ class Score(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     quiz_id = db.Column(db.Integer, db.ForeignKey('quiz.id'), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    time_stamp_of_attempt = db.Column(db.DateTime, default=datetime.utcnow)
     total_scored = db.Column(db.Float, nullable=False)
     time_stamp_of_attempt = db.Column(db.DateTime, default=datetime.now(utc))
