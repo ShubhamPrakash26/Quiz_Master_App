@@ -47,7 +47,9 @@ def init_db():
             )
             db.session.add(admin)
             db.session.commit()
-
-if __name__ == '__main__':
+            
+if __name__ == "__main__":
     init_db()
+    port = int(os.getenv("PORT", 5000))  
+    app.run(host="0.0.0.0", port=port)
     app.run(debug=True)
