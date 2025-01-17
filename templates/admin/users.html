@@ -105,7 +105,6 @@ document.getElementById('userSearch').addEventListener('input', function(e) {
 });
 
 function viewUserDetails(userId) {
-    // This function would be implemented to load user details into the modal
     fetch(`/admin/api/user/${userId}`)
         .then(response => response.json())
         .then(data => {
@@ -117,7 +116,7 @@ function viewUserDetails(userId) {
                         <p><strong>Qualification:</strong> ${data.qualification}</p>
                     </div>
                     <div class="col-md-6">
-                        <p><strong>Date of Birth:</strong> ${data.dob}</p>
+                        <p><strong>Date of Birth:</strong> ${data.dob || 'N/A'}</p>
                         <p><strong>Total Quizzes:</strong> ${data.quiz_scores.length}</p>
                         <p><strong>Average Score:</strong> ${data.average_score}%</p>
                     </div>
@@ -125,14 +124,22 @@ function viewUserDetails(userId) {
             `;
 
             const quizHistoryTable = document.getElementById('userQuizHistory').getElementsByTagName('tbody')[0];
-            quizHistoryTable.innerHTML = data.quiz_scores.map(score => `
-                <tr>
-                    <td>${score.quiz_name}</td>
-                    <td>${score.date}</td>
-                    <td>${score.score}%</td>
-                </tr>
-            `).join('');
-        });
+            quizHistoryTable.innerHTML = "";  // Clear previous data
+
+            if (data.quiz_scores.length === 0) {
+                quizHistoryTable.innerHTML = `<tr><td colspan="3">No quizzes taken yet.</td></tr>`;
+            } else {
+                data.quiz_scores.forEach(score => {
+                    const row = `<tr>
+                        <td>${score.quiz_name}</td>
+                        <td>${score.date}</td>
+                        <td>${score.score}%</td>
+                    </tr>`;
+                    quizHistoryTable.innerHTML += row;
+                });
+            }
+        })
+        .catch(error => console.error('Error fetching user details:', error));
 }
 </script>
 

@@ -6,6 +6,7 @@ from models.models import db, Subject, Chapter, Quiz, Question, User, Score
 from forms.admin_forms import SubjectForm, ChapterForm, QuizForm, QuestionForm
 from sqlalchemy.orm import joinedload
 from models.models import db, User, Subject, Chapter, Quiz, Question, Score
+from flask import jsonify
 
 admin = Blueprint('admin', __name__)
 
@@ -186,9 +187,14 @@ def add_quiz():
     return render_template('admin/quizzes.html', form=form)
 
 @admin.route('/quiz/edit/<int:id>', methods=['GET', 'POST'])
+@login_required
+@admin_required
 def edit_quiz(id):
     quiz = Quiz.query.get_or_404(id)
     form = QuizForm()
+
+    # Fetch chapters again and ensure choices are populated
+    form.chapter_id.choices = [(chapter.id, f"{chapter.subject.name} - {chapter.name}") for chapter in Chapter.query.join(Subject).all()]
 
     if form.validate_on_submit():
         quiz.chapter_id = form.chapter_id.data
@@ -199,7 +205,7 @@ def edit_quiz(id):
         flash('Quiz updated successfully!', 'success')
         return redirect(url_for('admin.manage_quizzes'))
 
-    # Pre-fill form for GET request
+    # Pre-fill form with existing quiz data
     form.chapter_id.data = quiz.chapter_id
     form.date_of_quiz.data = quiz.date_of_quiz
     form.duration_hours.data = quiz.time_duration.seconds // 3600
@@ -290,6 +296,37 @@ def delete_question(quiz_id, question_id):
 def manage_users():
     users = User.query.filter_by(is_admin=False).all()
     return render_template('admin/users.html', users=users)
+
+@admin.route('/delete_user/<int:id>', methods=['POST', 'GET'])
+def delete_user(id):
+    # Your user deletion logic here
+    return redirect(url_for('admin.users'))
+
+@admin.route('/admin/api/user/<int:user_id>', methods=['GET'])
+def get_user_details(user_id):
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+
+    # Fetch quiz history
+    quiz_scores = Score.query.filter_by(user_id=user_id).join(Quiz).all()
+    
+    quiz_history = [{
+    "quiz_name": score.quiz.quiz_title if score.quiz else "Unknown Quiz",  # Update this line
+    "date": score.time_stamp_of_attempt.strftime('%Y-%m-%d'),
+    "score": score.total_scored
+    } for score in quiz_scores]
+
+    response_data = {
+        "full_name": user.full_name,
+        "username": user.username,
+        "qualification": user.qualification or "N/A",
+        "dob": user.dob.strftime('%Y-%m-%d') if user.dob else "N/A",
+        "quiz_scores": quiz_history,
+        "average_score": round(sum(s["score"] for s in quiz_history) / len(quiz_history), 2) if quiz_history else 0
+    }
+
+    return jsonify(response_data)
 
 # Quiz Results
 @admin.route('/admin/results')
