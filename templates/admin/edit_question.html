@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mb-4">Edit Question</h1>
+    <div class="card">
+        <div class="card-body">
+            <form method="POST">
+                {{ form.hidden_tag() }}
+                
+                <div class="mb-3">
+                    {{ form.question_statement.label(class="form-label") }}
+                    {{ form.question_statement(class="form-control", rows=3) }}
+                    {% for error in form.question_statement.errors %}
+                        <span class="text-danger">{{ error }}</span>
+                    {% endfor %}
+                </div>
+
+                <div class="mb-3">
+                    {{ form.option1.label(class="form-label") }}
+                    {{ form.option1(class="form-control") }}
+                    {% for error in form.option1.errors %}
+                        <span class="text-danger">{{ error }}</span>
+                    {% endfor %}
+                </div>
+
+                <div class="mb-3">
+                    {{ form.option2.label(class="form-label") }}
+                    {{ form.option2(class="form-control") }}
+                    {% for error in form.option2.errors %}
+                        <span class="text-danger">{{ error }}</span>
+                    {% endfor %}
+                </div>
+
+                <div class="mb-3">
+                    {{ form.option3.label(class="form-label") }}
+                    {{ form.option3(class="form-control") }}
+                    {% for error in form.option3.errors %}
+                        <span class="text-danger">{{ error }}</span>
+                    {% endfor %}
+                </div>
+
+                <div class="mb-3">
+                    {{ form.option4.label(class="form-label") }}
+                    {{ form.option4(class="form-control") }}
+                    {% for error in form.option4.errors %}
+                        <span class="text-danger">{{ error }}</span>
+                    {% endfor %}
+                </div>
+
+                <div class="mb-3">
+                    {{ form.correct_option.label(class="form-label") }}
+                    {{ form.correct_option(class="form-select") }}
+                    {% for error in form.correct_option.errors %}
+                        <span class="text-danger">{{ error }}</span>
+                    {% endfor %}
+                </div>
+
+                <div class="text-end">
+                    <a href="{{ url_for('admin.manage_questions', quiz_id=quiz.id) }}" class="btn btn-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    .container {
+        margin-top: 20px;
+        max-width: 800px;
+    }
+    .card {
+        border-radius: 0.5rem;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    .form-label {
+        font-weight: bold;
+    }
+    .text-danger {
+        font-size: 0.9rem;
+    }
+</style>
+{% endblock %}

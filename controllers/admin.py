@@ -246,6 +246,43 @@ def manage_questions(quiz_id):
                          questions=questions, 
                          quiz=quiz)
 
+@admin.route('/admin/quizzes/<int:quiz_id>/questions/<int:question_id>/edit', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def edit_question(quiz_id, question_id):
+    quiz = Quiz.query.get_or_404(quiz_id)
+    question = Question.query.get_or_404(question_id)
+    form = QuestionForm(obj=question)
+
+    if form.validate_on_submit():
+        question.question_statement = form.question_statement.data
+        question.option1 = form.option1.data
+        question.option2 = form.option2.data
+        question.option3 = form.option3.data
+        question.option4 = form.option4.data
+        question.correct_option = form.correct_option.data
+        db.session.commit()
+        flash('Question updated successfully!', 'success')
+        return redirect(url_for('admin.manage_questions', quiz_id=quiz_id))
+
+    return render_template(
+        'admin/edit_question.html',
+        form=form,
+        quiz=quiz,
+        question=question
+    )
+
+@admin.route('/admin/quizzes/<int:quiz_id>/questions/<int:question_id>/delete', methods=['POST', 'GET'])
+@login_required
+@admin_required
+def delete_question(quiz_id, question_id):
+    question = Question.query.get_or_404(question_id)
+    db.session.delete(question)
+    db.session.commit()
+    flash('Question deleted successfully!', 'success')
+    return redirect(url_for('admin.manage_questions', quiz_id=quiz_id))
+
+
 # User Management
 @admin.route('/admin/users')
 @login_required
