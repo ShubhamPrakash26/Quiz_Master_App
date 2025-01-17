@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="quiz-timer alert alert-info">
+    Time Remaining: <span id="timer">Loading...</span>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header">
+        <h3>{{ quiz.chapter.name }} - Quiz</h3>
+        <p class="text-muted mb-0">{{ quiz.remarks }}</p>
+    </div>
+    <div class="card-body">
+        <form id="quizForm" method="POST" action="{{ url_for('user.submit_quiz', quiz_id=quiz.id) }}">
+            {% for question in questions %}
+                <div class="question-card" id="question-{{ question.id }}">
+                    <h5 class="mb-3">Question {{ loop.index }}: {{ question.question_statement }}</h5>
+                    <div class="options">
+                        {% for i in range(1, 5) %}
+                            {% set option = question['option' ~ i] %}
+                            <div class="option">
+                                <input type="radio" 
+                                       name="question_{{ question.id }}" 
+                                       id="q{{ question.id }}_option{{ i }}" 
+                                       value="{{ i }}"
+                                       class="option-input d-none">
+                                <label for="q{{ question.id }}_option{{ i }}" class="option-label">
+                                    {{ option }}
+                                </label>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endfor %}
+
+            <div class="d-grid gap-2 col-md-6 mx-auto">
+                <button type="submit" class="btn btn-primary btn-lg">Submit Quiz</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Timer functionality
+const duration = {{ duration_seconds }};
+let timeLeft = duration;
+
+function updateTimer() {
+    const minutes = Math.floor(timeLeft / 60);
+    const seconds = timeLeft % 60;
+    document.getElementById('timer').textContent = 
+        `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    
+    if (timeLeft <= 0) {
+        document.getElementById('quizForm').submit();
+    } else {
+        timeLeft--;
+        setTimeout(updateTimer, 1000);
+    }
+}
+
+// Start the timer
+updateTimer();
+
+// Confirm before leaving page
+window.onbeforeunload = function() {
+    return "Are you sure you want to leave? Your quiz progress will be lost.";
+};
+
+// Remove confirmation when submitting form
+document.getElementById('quizForm').onsubmit = function() {
+    window.onbeforeunload = null;
+};
+</script>
+{% endblock %}

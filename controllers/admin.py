@@ -5,6 +5,7 @@ from functools import wraps
 from models.models import db, Subject, Chapter, Quiz, Question, User, Score
 from forms.admin_forms import SubjectForm, ChapterForm, QuizForm, QuestionForm
 from sqlalchemy.orm import joinedload
+from models.models import db, User, Subject, Chapter, Quiz, Question, Score
 
 admin = Blueprint('admin', __name__)
 
@@ -105,6 +106,34 @@ def manage_chapters():
     chapters = Chapter.query.all()
     return render_template('admin/chapters.html', form=form, chapters=chapters)
 
+@admin.route('/admin/chapters/<int:id>/edit', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def edit_chapter(id):
+    chapter = Chapter.query.get_or_404(id)
+    form = ChapterForm(obj=chapter)
+    form.subject_id.choices = [(s.id, s.name) for s in Subject.query.all()]
+
+    if form.validate_on_submit():
+        chapter.name = form.name.data
+        chapter.description = form.description.data
+        chapter.subject_id = form.subject_id.data
+        db.session.commit()
+        flash('Chapter updated successfully!', 'success')
+        return redirect(url_for('admin.manage_chapters'))
+
+    return render_template('admin/edit_chapter.html', form=form, chapter=chapter)
+
+@admin.route('/admin/chapters/<int:id>/delete', methods=['POST'])
+@login_required
+@admin_required
+def delete_chapter(id):
+    chapter = Chapter.query.get_or_404(id)
+    db.session.delete(chapter)
+    db.session.commit()
+    flash('Chapter deleted successfully!', 'success')
+    return redirect(url_for('admin.manage_chapters'))
+
 # Quiz Management
 @admin.route('/admin/quizzes')
 @login_required
@@ -132,6 +161,61 @@ def manage_quizzes():
     
     quizzes = Quiz.query.options(joinedload(Quiz.chapter)).all()
     return render_template('admin/quizzes.html', form=form, quizzes=quizzes)
+
+@admin.route('/admin/quizzes/add', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def add_quiz():
+    form = QuizForm()
+    chapters = Chapter.query.all()
+    form.chapter_id.choices = [(chapter.id, f"{chapter.subject.name} - {chapter.name}") for chapter in chapters]
+
+    if form.validate_on_submit():
+        duration = timedelta(hours=form.duration_hours.data, minutes=form.duration_minutes.data)
+        new_quiz = Quiz(
+            chapter_id=form.chapter_id.data,
+            date_of_quiz=form.date_of_quiz.data,
+            time_duration=duration,
+            remarks=form.remarks.data
+        )
+        db.session.add(new_quiz)
+        db.session.commit()
+        flash('Quiz added successfully!', 'success')
+        return redirect(url_for('admin.manage_quizzes'))
+
+    return render_template('admin/quizzes.html', form=form)
+
+@admin.route('/quiz/edit/<int:id>', methods=['GET', 'POST'])
+def edit_quiz(id):
+    quiz = Quiz.query.get_or_404(id)
+    form = QuizForm()
+
+    if form.validate_on_submit():
+        quiz.chapter_id = form.chapter_id.data
+        quiz.date_of_quiz = form.date_of_quiz.data
+        quiz.time_duration = timedelta(hours=form.duration_hours.data, minutes=form.duration_minutes.data)
+        quiz.remarks = form.remarks.data
+        db.session.commit()
+        flash('Quiz updated successfully!', 'success')
+        return redirect(url_for('admin.manage_quizzes'))
+
+    # Pre-fill form for GET request
+    form.chapter_id.data = quiz.chapter_id
+    form.date_of_quiz.data = quiz.date_of_quiz
+    form.duration_hours.data = quiz.time_duration.seconds // 3600
+    form.duration_minutes.data = (quiz.time_duration.seconds % 3600) // 60
+    form.remarks.data = quiz.remarks
+
+    return render_template('admin/edit_quiz.html', form=form, quiz=quiz)
+
+@admin.route('/quiz/delete/<int:id>', methods=['POST', 'GET'])
+def delete_quiz(id):
+    quiz = Quiz.query.get_or_404(id)
+    db.session.delete(quiz)
+    db.session.commit()
+    flash('Quiz deleted successfully!', 'success')
+    return redirect(url_for('admin.manage_quizzes'))
+
 
 # Question Management
 @admin.route('/admin/quizzes/<int:quiz_id>/questions', methods=['GET', 'POST'])

@@ -25,28 +25,34 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for quiz in quizzes %}
-                        <tr>
-                            <td>{{ quiz.id }}</td>
-                            <td>{{ quiz.chapter.subject.name }} - {{ quiz.chapter.name }}</td>
-                            <td>{{ quiz.date_of_quiz.strftime('%Y-%m-%d') }}</td>
-                            <td>
-                                {% set hours = quiz.time_duration.total_seconds() // 3600 %}
-                                {% set minutes = (quiz.time_duration.total_seconds() % 3600) // 60 %}
-                                {{ '%d:%02d' % (hours, minutes) }} hours
-                            </td>
-                            <td>{{ quiz.questions|length }}</td>
-                            <td>
-                                <a href="{{ url_for('admin.manage_questions', quiz_id=quiz.id) }}" 
-                                   class="btn btn-sm btn-primary">Questions</a>
-                                <a href="{{ url_for('admin.edit_quiz', id=quiz.id) }}" 
-                                   class="btn btn-sm btn-warning">Edit</a>
-                                <a href="{{ url_for('admin.delete_quiz', id=quiz.id) }}" 
-                                   class="btn btn-sm btn-danger"
-                                   onclick="return confirm('Are you sure you want to delete this quiz?')">Delete</a>
-                            </td>
-                        </tr>
-                        {% endfor %}
+                        {% if quizzes %}
+                            {% for quiz in quizzes %}
+                            <tr>
+                                <td>{{ quiz.id }}</td>
+                                <td>{{ quiz.chapter.subject.name }} - {{ quiz.chapter.name }}</td>
+                                <td>{{ quiz.date_of_quiz.strftime('%Y-%m-%d') }}</td>
+                                <td>
+                                    {% set hours = quiz.time_duration.total_seconds() // 3600 %}
+                                    {% set minutes = (quiz.time_duration.total_seconds() % 3600) // 60 %}
+                                    {{ '%d:%02d' % (hours, minutes) }} hours
+                                </td>
+                                <td>{{ quiz.questions|length }}</td>
+                                <td>
+                                    <a href="{{ url_for('admin.manage_questions', quiz_id=quiz.id) }}" 
+                                       class="btn btn-sm btn-primary">Questions</a>
+                                    <a href="{{ url_for('admin.edit_quiz', id=quiz.id) }}" 
+                                       class="btn btn-sm btn-warning">Edit</a>
+                                    <a href="{{ url_for('admin.delete_quiz', id=quiz.id) }}" 
+                                       class="btn btn-sm btn-danger"
+                                       onclick="return confirm('Are you sure you want to delete this quiz?')">Delete</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="6" class="text-center">No quizzes available.</td>
+                            </tr>
+                        {% endif %}
                     </tbody>
                 </table>
             </div>
@@ -62,36 +68,55 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <form method="POST">
+                    <form method="POST" action="{{ url_for('admin.add_quiz') }}">
                         {{ form.hidden_tag() }}
+
+                        <!-- Chapter Selection -->
                         <div class="mb-3">
                             {{ form.chapter_id.label(class="form-label") }}
                             {{ form.chapter_id(class="form-select") }}
                             {% for error in form.chapter_id.errors %}
-                                <span class="text-danger">{{ error }}</span>
+                                <div class="text-danger">{{ error }}</div>
                             {% endfor %}
                         </div>
+
+                        <!-- Quiz Date -->
                         <div class="mb-3">
                             {{ form.date_of_quiz.label(class="form-label") }}
                             {{ form.date_of_quiz(class="form-control", type="date") }}
                             {% for error in form.date_of_quiz.errors %}
-                                <span class="text-danger">{{ error }}</span>
+                                <div class="text-danger">{{ error }}</div>
                             {% endfor %}
                         </div>
+
+                        <!-- Duration -->
                         <div class="row mb-3">
                             <div class="col">
                                 {{ form.duration_hours.label(class="form-label") }}
                                 {{ form.duration_hours(class="form-control", min=0) }}
+                                {% for error in form.duration_hours.errors %}
+                                    <div class="text-danger">{{ error }}</div>
+                                {% endfor %}
                             </div>
                             <div class="col">
                                 {{ form.duration_minutes.label(class="form-label") }}
                                 {{ form.duration_minutes(class="form-control", min=0, max=59) }}
+                                {% for error in form.duration_minutes.errors %}
+                                    <div class="text-danger">{{ error }}</div>
+                                {% endfor %}
                             </div>
                         </div>
+
+                        <!-- Remarks -->
                         <div class="mb-3">
                             {{ form.remarks.label(class="form-label") }}
                             {{ form.remarks(class="form-control", rows=3) }}
+                            {% for error in form.remarks.errors %}
+                                <div class="text-danger">{{ error }}</div>
+                            {% endfor %}
                         </div>
+
+                        <!-- Submit Button -->
                         <div class="text-end">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                             <button type="submit" class="btn btn-primary">Add Quiz</button>

@@ -1,6 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, TextAreaField, SelectField, DateField, IntegerField, FieldList, FormField
 from wtforms.validators import DataRequired, Length
+from wtforms.validators import DataRequired, NumberRange
 
 class SubjectForm(FlaskForm):
     name = StringField('Subject Name', validators=[DataRequired(), Length(min=2, max=100)])
@@ -26,6 +27,6 @@ class QuestionForm(FlaskForm):
 class QuizForm(FlaskForm):
     chapter_id = SelectField('Chapter', coerce=int, validators=[DataRequired()])
     date_of_quiz = DateField('Quiz Date', validators=[DataRequired()])
-    duration_hours = IntegerField('Duration (Hours)', default=0)
-    duration_minutes = IntegerField('Duration (Minutes)', validators=[DataRequired()])
-    remarks = TextAreaField('Remarks')
+    duration_hours = IntegerField('Duration (Hours)', default=0, validators=[DataRequired(), NumberRange(min=0)])
+    duration_minutes = IntegerField('Duration (Minutes)', validators=[DataRequired(), NumberRange(min=0, max=59)])
+    remarks = TextAreaField('Remarks', validators=[DataRequired()])

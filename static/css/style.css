@@ -1,3 +1,103 @@
 .form-group {
     margin-bottom: 1rem;
 }
+
+/* Custom CSS for Quiz Master */
+
+/* Dashboard Cards */
+.quiz-card {
+    transition: transform 0.2s;
+    height: 100%;
+}
+
+.quiz-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* Quiz Interface */
+.quiz-timer {
+    position: sticky;
+    top: 20px;
+    z-index: 100;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.question-card {
+    margin-bottom: 20px;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.option-label {
+    display: block;
+    padding: 10px 15px;
+    margin: 5px 0;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.option-label:hover {
+    background-color: #f8f9fa;
+}
+
+.option-input:checked + .option-label {
+    background-color: #e9ecef;
+    border-color: #6c757d;
+}
+
+/* Score Display */
+.score-circle {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    border: 10px solid #28a745;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 20px auto;
+}
+
+/* Progress Bar */
+.progress {
+    height: 10px;
+    margin: 10px 0;
+}
+
+/* Custom Table Styling */
+.quiz-history-table th,
+.quiz-history-table td {
+    vertical-align: middle;
+}
+
+/* Navigation Pills */
+.nav-pills .nav-link.active {
+    background-color: #343a40;
+}
+
+/* Custom Badge Colors */
+.badge-upcoming {
+    background-color: #17a2b8;
+}
+
+.badge-completed {
+    background-color: #28a745;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .quiz-timer {
+        position: fixed;
+        top: auto;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        border-radius: 0;
+    }
+}

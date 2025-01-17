@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h2>Welcome, {{ current_user.full_name }}</h2>
+    </div>
+</div>
+
+<ul class="nav nav-pills mb-4">
+    <li class="nav-item">
+        <a class="nav-link active" id="available-tab" data-bs-toggle="pill" href="#available">Available Quizzes</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" id="history-tab" data-bs-toggle="pill" href="#history">Quiz History</a>
+    </li>
+</ul>
+
+<div class="tab-content">
+    <!-- Available Quizzes -->
+    <div class="tab-pane fade show active" id="available">
+        <div class="row">
+            <div class="col-md-3 mb-4">
+                <!-- Subject Filter -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Filter by Subject</h5>
+                    </div>
+                    <div class="card-body">
+                        <select class="form-select" id="subjectFilter">
+                            <option value="">All Subjects</option>
+                            {% for subject in subjects %}
+                                <option value="{{ subject.id }}">{{ subject.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-9">
+                <div class="row">
+                    {% for quiz in available_quizzes %}
+                        <div class="col-md-6 mb-4">
+                            <div class="card quiz-card">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ quiz.chapter.subject.name }}</h5>
+                                    <h6 class="card-subtitle mb-2 text-muted">{{ quiz.chapter.name }}</h6>
+                                    <p class="card-text">{{ quiz.remarks }}</p>
+                                    <div class="mb-2">
+                                        <span class="badge badge-upcoming">Date: {{ quiz.date_of_quiz.strftime('%Y-%m-%d') }}</span>
+                                        <span class="badge bg-secondary">Duration: {{ quiz.time_duration }}</span>
+                                    </div>
+                                    <a href="{{ url_for('user.start_quiz', quiz_id=quiz.id) }}" class="btn btn-primary">Start Quiz</a>
+                                </div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="col">
+                            <div class="alert alert-info">No quizzes available at the moment.</div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quiz History -->
+    <div class="tab-pane fade" id="history">
+        <div class="card">
+            <div class="card-body">
+                <table class="table quiz-history-table">
+                    <thead>
+                        <tr>
+                            <th>Quiz</th>
+                            <th>Subject</th>
+                            <th>Date</th>
+                            <th>Score</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for attempt in past_attempts %}
+                            <tr>
+                                <td>{{ attempt.quiz.chapter.name }}</td>
+                                <td>{{ attempt.quiz.chapter.subject.name }}</td>
+                                <td>{{ attempt.time_stamp_of_attempt.strftime('%Y-%m-%d %H:%M') }}</td>
+                                <td>
+                                    <div class="progress">
+                                        <div class="progress-bar bg-success" 
+                                             role="progressbar" 
+                                             style="width: {{ attempt.total_scored }}%">
+                                            {{ "%.1f"|format(attempt.total_scored) }}%
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <a href="{{ url_for('user.view_result', score_id=attempt.id) }}" 
+                                       class="btn btn-sm btn-outline-primary">
+                                        View Details
+                                    </a>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="5" class="text-center">No quiz attempts yet.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.getElementById('subjectFilter').addEventListener('change', function() {
+    const subjectId = this.value;
+    const quizCards = document.querySelectorAll('.quiz-card');
+    
+    quizCards.forEach(card => {
+        const subject = card.querySelector('.card-title').textContent;
+        if (!subjectId || card.dataset.subjectId === subjectId) {
+            card.closest('.col-md-6').style.display = 'block';
+        } else {
+            card.closest('.col-md-6').style.display = 'none';
+        }
+    });
+});
+</script>
+{% endblock %}
