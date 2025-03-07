@@ -23,7 +23,7 @@
                                        name="question_{{ question.id }}" 
                                        id="q{{ question.id }}_option{{ i }}" 
                                        value="{{ i }}"
-                                       class="option-input d-none">
+                                       class="option-input">
                                 <label for="q{{ question.id }}_option{{ i }}" class="option-label">
                                     {{ option }}
                                 </label>
@@ -32,19 +32,20 @@
                     </div>
                 </div>
             {% endfor %}
-
+    
             <div class="d-grid gap-2 col-md-6 mx-auto">
                 <button type="submit" class="btn btn-primary btn-lg">Submit Quiz</button>
             </div>
         </form>
-    </div>
+    </div>    
 </div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
 // Timer functionality
-const duration = {{ duration_seconds }};
+const duration = {{ duration_seconds | default(300) }};
+
 let timeLeft = duration;
 
 function updateTimer() {
@@ -69,9 +70,9 @@ window.onbeforeunload = function() {
     return "Are you sure you want to leave? Your quiz progress will be lost.";
 };
 
-// Remove confirmation when submitting form
 document.getElementById('quizForm').onsubmit = function() {
     window.onbeforeunload = null;
 };
+
 </script>
 {% endblock %}
