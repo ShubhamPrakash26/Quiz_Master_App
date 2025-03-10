@@ -164,5 +164,5 @@ This project is licensed under the MIT License. See the `LICENSE` file for detai
 - **SQLAlchemy** for ORM support.
 
 ---
-For any questions or suggestions, please contact [Your Name/Email].
+For any questions or suggestions, please contact [Shubham Prakash/prakashshubham26@gmail.com].
 
