@@ -39,6 +39,7 @@
     margin: 5px 0;
     border: 1px solid #dee2e6;
     border-radius: 5px;
+    font-size: medium;
     cursor: pointer;
     transition: background-color 0.2s;
 }

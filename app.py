@@ -5,7 +5,7 @@ from models.models import db, User
 from dotenv import load_dotenv
 from controllers.auth import auth
 from controllers.admin import admin
-from controllers.user import user  # Added user controller
+from controllers.user import user
 from werkzeug.security import generate_password_hash
 import os
 
@@ -20,7 +20,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # Register blueprints
 app.register_blueprint(auth)
 app.register_blueprint(admin)
-app.register_blueprint(user)  # Added user blueprint
+app.register_blueprint(user)
 
 # Initialize extensions
 db.init_app(app)
@@ -32,11 +32,15 @@ login_manager.login_view = 'auth.login'
 def load_user(user_id):
     return User.query.get(int(user_id))
 
+# Landing page route
+@app.route('/')
+def landing():
+    return render_template('landing.html')
+
 # Create database tables
 def init_db():
     with app.app_context():
         db.create_all()
-        # Check if the admin user exists
         admin = User.query.filter_by(username='admin@quizmaster.com').first()
         if not admin:
             admin = User(
@@ -47,9 +51,8 @@ def init_db():
             )
             db.session.add(admin)
             db.session.commit()
-            
+
 if __name__ == "__main__":
     init_db()
-    port = int(os.getenv("PORT", 5000))  
-    app.run(host="0.0.0.0", port=port)
-    app.run(debug=True)
+    port = int(os.getenv("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=True)

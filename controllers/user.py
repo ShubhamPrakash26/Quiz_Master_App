@@ -7,7 +7,7 @@ from sqlalchemy import desc
 
 user = Blueprint('user', __name__)
 
-@user.route('/')
+# @user.route('/')
 @user.route('/dashboard')
 @login_required
 def dashboard():
