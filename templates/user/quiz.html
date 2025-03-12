@@ -1,20 +1,31 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="quiz-timer alert alert-info">
-    Time Remaining: <span id="timer">Loading...</span>
-</div>
-
-<div class="card mb-4">
-    <div class="card-header">
-        <h3>{{ quiz.chapter.name }} - Quiz</h3>
-        <p class="text-muted mb-0">{{ quiz.remarks }}</p>
+<div class="quiz-container">
+    <!-- Timer -->
+    <div class="quiz-timer">
+        Time Remaining: <span id="timer">Loading...</span>
     </div>
-    <div class="card-body">
-        <form id="quizForm" method="POST" action="{{ url_for('user.submit_quiz', quiz_id=quiz.id) }}">
+
+    <!-- Progress Bar -->
+    <div class="progress-indicator" id="progressIndicator">
+        {% for question in questions %}
+            <div class="progress-step{% if loop.first %} active{% endif %}"></div>
+        {% endfor %}
+    </div>
+
+    <!-- Quiz Header -->
+    <div class="quiz-header">
+        <h1>{{ quiz.chapter.name }} - Quiz</h1>
+        <p class="quiz-remarks">{{ quiz.remarks }}</p>
+    </div>
+
+    <!-- Quiz Form -->
+    <form id="quizForm" method="POST" action="{{ url_for('user.submit_quiz', quiz_id=quiz.id) }}">
+        <div class="questions-container">
             {% for question in questions %}
-                <div class="question-card" id="question-{{ question.id }}">
-                    <h5 class="mb-3">Question {{ loop.index }}: {{ question.question_statement }}</h5>
+                <div class="question-card{% if loop.first %} active{% endif %}" id="question-{{ question.id }}">
+                    <h2>Question {{ loop.index }}: {{ question.question_statement }}</h2>
                     <div class="options">
                         {% for i in range(1, 5) %}
                             {% set option = question['option' ~ i] %}
@@ -31,49 +42,162 @@
                         {% endfor %}
                     </div>
                 </div>
-                <br>
             {% endfor %}
-    
-            <div class="d-grid gap-2 col-md-6 mx-auto">
-                <button type="submit" class="btn btn-primary btn-lg">Submit Quiz</button>
+        </div>
+
+        <div class="quiz-navigation">
+            <button type="button" id="prevBtn" class="nav-button">
+                <span class="nav-icon">←</span>
+                Previous
+            </button>
+            <div class="question-counter">
+                Question <span id="currentQuestion">1</span> of <span id="totalQuestions">{{ questions|length }}</span>
             </div>
-        </form>
-    </div>    
+            <button type="button" id="nextBtn" class="nav-button">
+                Next
+                <span class="nav-icon">→</span>
+            </button>
+        </div>
+
+        <div class="submit-container">
+            <button type="submit" class="submit-button">Submit Quiz</button>
+        </div>
+    </form>
 </div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
+let currentQuestionIndex = 0;
+let timeLeft = {{ duration_seconds | default(300) }};
+const totalQuestions = {{ questions|length }};
+
+// DOM Elements
+const timerElement = document.getElementById('timer');
+const progressSteps = document.querySelectorAll('.progress-step');
+const questionCards = document.querySelectorAll('.question-card');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const currentQuestionSpan = document.getElementById('currentQuestion');
+const quizForm = document.getElementById('quizForm');
+
+// Show Question
+function showQuestion(index) {
+    questionCards.forEach(card => card.classList.remove('active'));
+    questionCards[index].classList.add('active');
+    
+    currentQuestionIndex = index;
+    currentQuestionSpan.textContent = index + 1;
+    
+    // Update progress indicator
+    progressSteps.forEach((step, i) => {
+        step.classList.remove('active', 'completed');
+        if (i < index) {
+            step.classList.add('completed');
+        } else if (i === index) {
+            step.classList.add('active');
+        }
+    });
+    
+    updateNavigation();
+}
+
+// Update Navigation
+function updateNavigation() {
+    prevBtn.disabled = currentQuestionIndex === 0;
+    
+    if (currentQuestionIndex === totalQuestions - 1) {
+        nextBtn.style.display = 'none';  // Hide Next button on last question
+        document.querySelector('.submit-button').style.display = 'block';  // Show Submit button
+    } else {
+        nextBtn.style.display = 'inline-flex'; // Show Next button
+        document.querySelector('.submit-button').style.display = 'none';  // Hide Submit button
+    }
+}
+
+// Initial Navigation Setup
+updateNavigation();
+
+// Navigation Event Listeners
+prevBtn.addEventListener('click', () => {
+    if (currentQuestionIndex > 0) {
+        showQuestion(currentQuestionIndex - 1);
+    }
+});
+
+nextBtn.addEventListener('click', () => {
+    if (currentQuestionIndex < totalQuestions - 1) {
+        showQuestion(currentQuestionIndex + 1);
+    }
+});
+
+
+// Update Progress
+function updateProgress() {
+    document.querySelectorAll('input[type="radio"]:checked').forEach(input => {
+        const questionId = input.name.split('_')[1];
+        const index = Array.from(questionCards).findIndex(
+            card => card.id === `question-${questionId}`
+        );
+        if (index !== -1) {
+            progressSteps[index].classList.add('completed');
+        }
+    });
+}
+
 // Timer functionality
-const duration = {{ duration_seconds | default(300) }};
-
-let timeLeft = duration;
-
 function updateTimer() {
     const minutes = Math.floor(timeLeft / 60);
     const seconds = timeLeft % 60;
-    document.getElementById('timer').textContent = 
-        `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    timerElement.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    
+    const timerContainer = document.querySelector('.quiz-timer');
+    if (timeLeft <= 60) {
+        timerContainer.classList.add('danger');
+    } else if (timeLeft <= 120) {
+        timerContainer.classList.add('warning');
+    }
     
     if (timeLeft <= 0) {
-        document.getElementById('quizForm').submit();
+        quizForm.submit();
     } else {
         timeLeft--;
         setTimeout(updateTimer, 1000);
     }
 }
 
-// Start the timer
-updateTimer();
-
-// Confirm before leaving page
-window.onbeforeunload = function() {
-    return "Are you sure you want to leave? Your quiz progress will be lost.";
-};
-
-document.getElementById('quizForm').onsubmit = function() {
+// Form Submission
+quizForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    
+    const unansweredCount = totalQuestions - 
+        document.querySelectorAll('input[type="radio"]:checked').length;
+    
+    if (unansweredCount > 0) {
+        const confirm = window.confirm(
+            `You have ${unansweredCount} unanswered questions. Are you sure you want to submit?`
+        );
+        if (!confirm) return;
+    }
+    
     window.onbeforeunload = null;
+    e.target.submit();
+});
+
+// Track answers for progress indication
+document.querySelectorAll('input[type="radio"]').forEach(input => {
+    input.addEventListener('change', updateProgress);
+});
+
+// Prevent accidental navigation
+window.onbeforeunload = function() {
+    if (document.querySelectorAll('input[type="radio"]:checked').length > 0) {
+        return "Are you sure you want to leave? Your quiz progress will be lost.";
+    }
 };
 
+// Initialize
+updateNavigation();
+updateTimer();
 </script>
 {% endblock %}

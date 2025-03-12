@@ -1,67 +1,71 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="text-center">Register</h2>
-                </div>
-                <div class="card-body">
-                    <form method="POST">
-                        {{ form.hidden_tag() }}
-                        <div class="form-group">
-                            {{ form.username.label }}
-                            {{ form.username(class="form-control") }}
-                            {% for error in form.username.errors %}
-                                <span class="text-danger">{{ error }}</span>
-                            {% endfor %}
-                        </div>
-                        <div class="form-group mt-3">
-                            {{ form.password.label }}
-                            {{ form.password(class="form-control") }}
-                            {% for error in form.password.errors %}
-                                <span class="text-danger">{{ error }}</span>
-                            {% endfor %}
-                        </div>
-                        <div class="form-group mt-3">
-                            {{ form.confirm_password.label }}
-                            {{ form.confirm_password(class="form-control") }}
-                            {% for error in form.confirm_password.errors %}
-                                <span class="text-danger">{{ error }}</span>
-                            {% endfor %}
-                        </div>
-                        <div class="form-group mt-3">
-                            {{ form.full_name.label }}
-                            {{ form.full_name(class="form-control") }}
-                            {% for error in form.full_name.errors %}
-                                <span class="text-danger">{{ error }}</span>
-                            {% endfor %}
-                        </div>
-                        <div class="form-group mt-3">
-                            {{ form.qualification.label }}
-                            {{ form.qualification(class="form-control") }}
-                            {% for error in form.qualification.errors %}
-                                <span class="text-danger">{{ error }}</span>
-                            {% endfor %}
-                        </div>
-                        <div class="form-group mt-3">
-                            {{ form.dob.label }}
-                            {{ form.dob(class="form-control", type="date") }}
-                            {% for error in form.dob.errors %}
-                                <span class="text-danger">{{ error }}</span>
-                            {% endfor %}
-                        </div>
-                        <div class="text-center mt-4">
-                            {{ form.submit(class="btn btn-primary") }}
-                        </div>
-                    </form>
-                    <div class="text-center mt-3">
-                        <p>Already have an account? <a href="{{ url_for('auth.login') }}">Login here</a></p>
-                    </div>
-                </div>
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <h1>Create Account</h1>
+            <p>Please fill in your information</p>
+        </div>
+        
+        <form method="POST" class="auth-form">
+            {{ form.hidden_tag() }}
+            
+            <div class="form-field">
+                {{ form.username.label(class="field-label") }}
+                {{ form.username(class="field-input", placeholder="Choose a username") }}
+                {% for error in form.username.errors %}
+                    <span class="error-message">{{ error }}</span>
+                {% endfor %}
             </div>
+
+            <div class="form-field">
+                {{ form.password.label(class="field-label") }}
+                {{ form.password(class="field-input", placeholder="Choose a password") }}
+                {% for error in form.password.errors %}
+                    <span class="error-message">{{ error }}</span>
+                {% endfor %}
+            </div>
+
+            <div class="form-field">
+                {{ form.confirm_password.label(class="field-label") }}
+                {{ form.confirm_password(class="field-input", placeholder="Confirm your password") }}
+                {% for error in form.confirm_password.errors %}
+                    <span class="error-message">{{ error }}</span>
+                {% endfor %}
+            </div>
+
+            <div class="form-field">
+                {{ form.full_name.label(class="field-label") }}
+                {{ form.full_name(class="field-input", placeholder="Enter your full name") }}
+                {% for error in form.full_name.errors %}
+                    <span class="error-message">{{ error }}</span>
+                {% endfor %}
+            </div>
+
+            <div class="form-field">
+                {{ form.qualification.label(class="field-label") }}
+                {{ form.qualification(class="field-input", placeholder="Enter your qualification") }}
+                {% for error in form.qualification.errors %}
+                    <span class="error-message">{{ error }}</span>
+                {% endfor %}
+            </div>
+
+            <div class="form-field">
+                {{ form.dob.label(class="field-label") }}
+                {{ form.dob(class="field-input custom-date") }}
+                {% for error in form.dob.errors %}
+                    <span class="error-message">{{ error }}</span>
+                {% endfor %}
+            </div>
+
+            <div class="form-action">
+                {{ form.submit(class="auth-button") }}
+            </div>
+        </form>
+
+        <div class="auth-footer">
+            <p>Already have an account? <a href="{{ url_for('auth.login') }}" class="auth-link">Login here</a></p>
         </div>
     </div>
 </div>

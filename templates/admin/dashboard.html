@@ -1,38 +1,47 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container">
-    <h1 class="mb-4">Admin Dashboard</h1>
+<div class="container fade-in">
+    <div class="dashboard-header">
+        <div>
+            <h1>Admin Dashboard</h1>
+            <p class="subtitle">Manage your quiz platform</p>
+        </div>
+    </div>
     
     <!-- Statistics Cards -->
     <div class="row mb-4">
-        <div class="col-md-3">
-            <div class="card bg-primary text-white">
+        <div class="col-md-3 col-sm-6 mb-4">
+            <div class="card stats-card primary">
                 <div class="card-body">
+                    <i class="fas fa-book icon"></i>
                     <h5 class="card-title">Total Subjects</h5>
                     <h2 class="card-text">{{ subjects_count }}</h2>
                 </div>
             </div>
-        </div><br>
-        <div class="col-md-3">
-            <div class="card bg-success text-white">
+        </div>
+        <div class="col-md-3 col-sm-6 mb-4">
+            <div class="card stats-card success">
                 <div class="card-body">
+                    <i class="fas fa-bookmark icon"></i>
                     <h5 class="card-title">Total Chapters</h5>
                     <h2 class="card-text">{{ chapters_count }}</h2>
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="card bg-info text-white">
+        <div class="col-md-3 col-sm-6 mb-4">
+            <div class="card stats-card info">
                 <div class="card-body">
+                    <i class="fas fa-question-circle icon"></i>
                     <h5 class="card-title">Total Quizzes</h5>
                     <h2 class="card-text">{{ quizzes_count }}</h2>
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="card bg-warning text-white">
+        <div class="col-md-3 col-sm-6 mb-4">
+            <div class="card stats-card warning">
                 <div class="card-body">
+                    <i class="fas fa-users icon"></i>
                     <h5 class="card-title">Total Users</h5>
                     <h2 class="card-text">{{ users_count }}</h2>
                 </div>
@@ -43,15 +52,23 @@
     <!-- Quick Actions -->
     <div class="row mb-4">
         <div class="col-md-12">
-            <div class="card">
+            <div class="card action-card">
                 <div class="card-header">
-                    <h5>Quick Actions</h5>
+                    <h5><i class="fas fa-bolt me-2"></i>Quick Actions</h5>
                 </div>
                 <div class="card-body">
-                    <a href="{{ url_for('admin.manage_subjects') }}" class="btn btn-primary me-2">Manage Subjects</a>
-                    <a href="{{ url_for('admin.manage_chapters') }}" class="btn btn-success me-2">Manage Chapters</a>
-                    <a href="{{ url_for('admin.manage_quizzes') }}" class="btn btn-info me-2">Manage Quizzes</a>
-                    <a href="{{ url_for('admin.manage_users') }}" class="btn btn-warning">Manage Users</a>
+                    <a href="{{ url_for('admin.manage_subjects') }}" class="btn action-btn primary">
+                        <i class="fas fa-book"></i> Manage Subjects
+                    </a>
+                    <a href="{{ url_for('admin.manage_chapters') }}" class="btn action-btn success">
+                        <i class="fas fa-bookmark"></i> Manage Chapters
+                    </a>
+                    <a href="{{ url_for('admin.manage_quizzes') }}" class="btn action-btn info">
+                        <i class="fas fa-question-circle"></i> Manage Quizzes
+                    </a>
+                    <a href="{{ url_for('admin.manage_users') }}" class="btn action-btn warning">
+                        <i class="fas fa-users"></i> Manage Users
+                    </a>
                 </div>
             </div>
         </div>
@@ -60,17 +77,21 @@
     <!-- Recent Activity -->
     <div class="row">
         <!-- Recent Quizzes -->
-        <div class="col-md-6">
-            <div class="card">
+        <div class="col-md-6 mb-4">
+            <div class="card action-card">
                 <div class="card-header">
-                    <h5>Recent Quizzes</h5>
+                    <h5><i class="fas fa-history me-2"></i>Recent Quizzes</h5>
                 </div>
-                <div class="card-body">
-                    <div class="list-group">
+                <div class="card-body p-0">
+                    <div class="list-group custom-list-group">
                         {% for quiz in recent_quizzes %}
                         <div class="list-group-item">
                             <h6 class="mb-1">{{ quiz.chapter.subject.name }} - {{ quiz.chapter.name }}</h6>
-                            <small>Date: {{ quiz.date_of_quiz.strftime('%Y-%m-%d') }}</small>
+                            <small><i class="far fa-calendar-alt me-1"></i>{{ quiz.date_of_quiz.strftime('%Y-%m-%d') }}</small>
+                        </div>
+                        {% else %}
+                        <div class="list-group-item text-center py-4">
+                            <p class="text-muted mb-0">No recent quizzes</p>
                         </div>
                         {% endfor %}
                     </div>
@@ -79,17 +100,21 @@
         </div>
 
         <!-- Recent Users -->
-        <div class="col-md-6">
-            <div class="card">
+        <div class="col-md-6 mb-4">
+            <div class="card action-card">
                 <div class="card-header">
-                    <h5>Recent Users</h5>
+                    <h5><i class="fas fa-user-plus me-2"></i>Recent Users</h5>
                 </div>
-                <div class="card-body">
-                    <div class="list-group">
+                <div class="card-body p-0">
+                    <div class="list-group custom-list-group">
                         {% for user in recent_users %}
                         <div class="list-group-item">
                             <h6 class="mb-1">{{ user.full_name }}</h6>
-                            <small>{{ user.username }}</small>
+                            <small><i class="far fa-user me-1"></i>{{ user.username }}</small>
+                        </div>
+                        {% else %}
+                        <div class="list-group-item text-center py-4">
+                            <p class="text-muted mb-0">No recent users</p>
                         </div>
                         {% endfor %}
                     </div>
@@ -98,4 +123,8 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 {% endblock %}

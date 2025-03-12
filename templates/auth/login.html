@@ -1,40 +1,39 @@
-<!-- templates/auth/login.html -->
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="text-center">Login</h2>
-                </div>
-                <div class="card-body">
-                    <form method="POST">
-                        {{ form.hidden_tag() }}
-                        <div class="form-group">
-                            {{ form.username.label }}
-                            {{ form.username(class="form-control") }}
-                            {% for error in form.username.errors %}
-                                <span class="text-danger">{{ error }}</span>
-                            {% endfor %}
-                        </div>
-                        <div class="form-group mt-3">
-                            {{ form.password.label }}
-                            {{ form.password(class="form-control") }}
-                            {% for error in form.password.errors %}
-                                <span class="text-danger">{{ error }}</span>
-                            {% endfor %}
-                        </div>
-                        <div class="text-center mt-4">
-                            {{ form.submit(class="btn btn-primary") }}
-                        </div>
-                    </form>
-                    <div class="text-center mt-3">
-                        <p>Don't have an account? <a href="{{ url_for('auth.register') }}">Register here</a></p>
-                    </div>
-                </div>
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <h1>Welcome Back</h1>
+            <p>Please login to your account</p>
+        </div>
+        
+        <form method="POST" class="auth-form">
+            {{ form.hidden_tag() }}
+            
+            <div class="form-field">
+                {{ form.username.label(class="field-label") }}
+                {{ form.username(class="field-input", placeholder="Enter your username") }}
+                {% for error in form.username.errors %}
+                    <span class="error-message">{{ error }}</span>
+                {% endfor %}
             </div>
+
+            <div class="form-field">
+                {{ form.password.label(class="field-label") }}
+                {{ form.password(class="field-input", placeholder="Enter your password") }}
+                {% for error in form.password.errors %}
+                    <span class="error-message">{{ error }}</span>
+                {% endfor %}
+            </div>
+
+            <div class="form-action">
+                {{ form.submit(class="auth-button") }}
+            </div>
+        </form>
+
+        <div class="auth-footer">
+            <p>Don't have an account? <a href="{{ url_for('auth.register') }}" class="auth-link">Register here</a></p>
         </div>
     </div>
 </div>
