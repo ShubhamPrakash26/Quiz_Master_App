@@ -39,66 +39,68 @@
     </div>
   </section>
 
-  <!-- Features Section -->
+<!-- Features Section -->
 <section id="features" class="features">
   <div class="container">
     <div class="section-header">
-      <h2>Discover the Power of Quiz Master</h2>
-      <p>Engaging quizzes, powerful analytics, and seamless user experience—all in one place.</p>
+      <h2>Unlock the Full Potential of Quiz Deck</h2>
+      <p>A powerful platform designed for seamless quiz management, user engagement, and insightful tracking.</p>
     </div>
+    
     <div class="features-grid">
-
+      
       <div class="feature-card">
         <div class="feature-icon">
           <i class="fas fa-user-shield"></i>
         </div>
-        <h3>Secure Authentication</h3>
-        <p>Role-based authentication ensures a secure experience for admins and users.</p>
+        <h3>Role-Based Authentication</h3>
+        <p>Secure access with role-based authentication, ensuring admins and users have the right permissions.</p>
       </div>
 
       <div class="feature-card">
         <div class="feature-icon">
-          <i class="fas fa-tasks"></i>
+          <i class="fas fa-cogs"></i>
         </div>
-        <h3>Quiz Management System</h3>
-        <p>Create, edit, and manage quizzes effortlessly with our intuitive dashboard.</p>
+        <h3>Comprehensive Admin Panel</h3>
+        <p>Admins can manage subjects, chapters, quizzes, and questions effortlessly from a centralized dashboard.</p>
       </div>
 
       <div class="feature-card">
         <div class="feature-icon">
-          <i class="fas fa-user"></i>
+          <i class="fas fa-chart-line"></i>
         </div>
-        <h3>User Profile & Progress Tracking</h3>
-        <p>Track quiz history, performance stats, and achievements in one place.</p>
+        <h3>User Result & Progress Tracking</h3>
+        <p>Track quiz performance, view detailed statistics, and monitor learning progress over time.</p>
       </div>
 
       <div class="feature-card">
         <div class="feature-icon">
-          <i class="fas fa-mobile-alt"></i>
+          <i class="fas fa-edit"></i>
         </div>
-        <h3>Fully Responsive Design</h3>
-        <p>Optimized for all devices—smartphones, tablets, and desktops.</p>
+        <h3>Seamless Quiz Experience</h3>
+        <p>Users can easily attempt quizzes, receive instant feedback, and analyze their performance.</p>
       </div>
 
       <div class="feature-card">
         <div class="feature-icon">
-          <i class="fas fa-bell"></i>
+          <i class="fas fa-users"></i>
         </div>
-        <h3>Instant Notifications</h3>
-        <p>Stay updated with real-time notifications about quizzes and results.</p>
+        <h3>Manage All Users</h3>
+        <p>Admins can view and manage all registered users, monitor activity, and ensure a smooth experience.</p>
       </div>
 
       <div class="feature-card">
         <div class="feature-icon">
           <i class="fas fa-paint-brush"></i>
         </div>
-        <h3>Elegant UI with Animations</h3>
-        <p>Enjoy a sleek interface with smooth animations for an immersive experience.</p>
+        <h3>Intuitive & Modern UI</h3>
+        <p>Enjoy a clean, easy-to-navigate interface with responsive design and smooth animations.</p>
       </div>
 
     </div>
   </div>
 </section>
+
 
 
   <!-- Product Section -->
@@ -117,6 +119,10 @@
           <div class="carousel-item">
             <img src="../static/images/AddQuestion.png" alt="Quiz taking experience">
             <div class="carousel-caption">Engaging quiz-taking experience</div>
+          </div>
+          <div class="carousel-item">
+            <img src="../static/images/admin_summary.png" alt="admin_Summary">
+            <div class="carousel-caption">Score Tracking for admins</div>
           </div>
           <div class="carousel-item">
             <img src="../static/images/ManageQuiz.png" alt="Manage Quiz">
@@ -152,10 +158,10 @@
       <div class="pricing-grid">
         <div class="pricing-card">
           <div class="pricing-img">
-            <img src="https://via.placeholder.com/500x300" alt="Basic Plan">
+            <img src="https://picsum.photos/id/180/500/300" alt="Basic Plan">
           </div>
           <h3>Basic</h3>
-          <div class="price">₹49<span>/month</span></div>
+          <div class="price">Free</div>
           <p>Perfect for individuals and small teams just getting started.</p>
           <ul class="features-list">
             <li><i class="fas fa-check"></i> Up to 5 quizzes</li>
@@ -163,15 +169,15 @@
             <li><i class="fas fa-check"></i> 100 quiz attempts per month</li>
             <li><i class="fas fa-check"></i> Email support</li>
           </ul>
-          <a href="#" class="btn btn-dark btn-block">Get Started</a>
+          <a href="{{ url_for('auth.register') }}" class="btn btn-dark btn-block">Get Started</a>
         </div>
         <div class="pricing-card popular">
           <div class="popular-badge">Most Popular</div>
           <div class="pricing-img">
-            <img src="https://via.placeholder.com/500x300" alt="Pro Plan">
+            <img src="https://picsum.photos/id/20/500/300" alt="Pro Plan">
           </div>
           <h3>Pro</h3>
-          <div class="price">₹99<span>/month</span></div>
+          <div class="price">₹49<span>/month</span></div>
           <p>Ideal for educators and growing businesses.</p>
           <ul class="features-list">
             <li><i class="fas fa-check"></i> Unlimited quizzes</li>
@@ -181,14 +187,14 @@
             <li><i class="fas fa-check"></i> Custom branding</li>
             <li><i class="fas fa-check"></i> Export results</li>
           </ul>
-          <a href="#" class="btn btn-primary btn-block">Get Started</a>
+          <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-block">Get Started</a>
         </div>
         <div class="pricing-card">
           <div class="pricing-img">
-            <img src="https://via.placeholder.com/500x300" alt="Enterprise Plan">
+            <img src="https://picsum.photos/id/1/500/300" alt="Enterprise Plan">
           </div>
           <h3>Enterprise</h3>
-          <div class="price">₹199<span>/month</span></div>
+          <div class="price">₹99<span>/month</span></div>
           <p>For organizations requiring advanced features and support.</p>
           <ul class="features-list">
             <li><i class="fas fa-check"></i> Everything in Pro</li>
@@ -198,7 +204,7 @@
             <li><i class="fas fa-check"></i> SSO integration</li>
             <li><i class="fas fa-check"></i> Custom feature development</li>
           </ul>
-          <a href="#" class="btn btn-dark btn-block">Get Started</a>
+          <a href="{{ url_for('auth.register') }}" class="btn btn-dark btn-block">Get Started</a>
         </div>
       </div>
     </div>
@@ -214,7 +220,7 @@
       <div class="testimonials-grid">
         <div class="testimonial-card">
           <div class="testimonial-header">
-            <img src="https://via.placeholder.com/100" alt="Sarah Johnson" class="testimonial-img">
+            <img src="https://res.cloudinary.com/dep5hs3mt/image/upload/v1741976916/Screenshot_2025-03-14_235103-removebg-preview_wvsdsg.png" alt="Sarah Johnson" class="testimonial-img">
             <div class="testimonial-info">
               <h4>Sarah Johnson</h4>
               <p>Teacher, Lincoln High School</p>
@@ -231,7 +237,7 @@
         </div>
         <div class="testimonial-card">
           <div class="testimonial-header">
-            <img src="https://via.placeholder.com/100" alt="Michael Chen" class="testimonial-img">
+            <img src="https://res.cloudinary.com/dep5hs3mt/image/upload/v1741976915/Screenshot_2025-03-14_235131-removebg-preview_dfcxnp.png" alt="Michael Chen" class="testimonial-img">
             <div class="testimonial-info">
               <h4>Michael Chen</h4>
               <p>Training Manager, TechCorp Inc.</p>
@@ -248,7 +254,7 @@
         </div>
         <div class="testimonial-card">
           <div class="testimonial-header">
-            <img src="https://via.placeholder.com/100" alt="Priya Patel" class="testimonial-img">
+            <img src="https://res.cloudinary.com/dep5hs3mt/image/upload/v1741976914/Screenshot_2025-03-14_235006-removebg-preview_g5h9jd.png" alt="Priya Patel" class="testimonial-img">
             <div class="testimonial-info">
               <h4>Priya Patel</h4>
               <p>Content Creator, LearnOnline</p>
@@ -265,7 +271,7 @@
         </div>
         <div class="testimonial-card">
           <div class="testimonial-header">
-            <img src="https://via.placeholder.com/100" alt="David Wilson" class="testimonial-img">
+            <img src="https://res.cloudinary.com/dep5hs3mt/image/upload/v1741976915/Screenshot_2025-03-14_235033-removebg-preview_cncwhk.png" alt="David Wilson" class="testimonial-img">
             <div class="testimonial-info">
               <h4>David Wilson</h4>
               <p>HR Director, Global Services Ltd</p>
@@ -282,7 +288,7 @@
         </div>
         <div class="testimonial-card">
           <div class="testimonial-header">
-            <img src="https://via.placeholder.com/100" alt="Emma Rodriguez" class="testimonial-img">
+            <img src="https://res.cloudinary.com/dep5hs3mt/image/upload/v1741976916/Screenshot_2025-03-14_235050-removebg-preview_jnddfl.png" alt="Emma Rodriguez" class="testimonial-img">
             <div class="testimonial-info">
               <h4>Emma Rodriguez</h4>
               <p>Student, University of Technology</p>
@@ -299,7 +305,7 @@
         </div>
         <div class="testimonial-card">
           <div class="testimonial-header">
-            <img src="https://via.placeholder.com/100" alt="James Thompson" class="testimonial-img">
+            <img src="https://res.cloudinary.com/dep5hs3mt/image/upload/v1741976915/Screenshot_2025-03-14_235144-removebg-preview_ydmus1.png" alt="James Thompson" class="testimonial-img">
             <div class="testimonial-info">
               <h4>James Thompson</h4>
               <p>E-Learning Developer, EduTech Solutions</p>

@@ -317,22 +317,96 @@ def get_user_details(user_id):
     if not user:
         return jsonify({"error": "User not found"}), 404
 
-    # Fetch quiz history
+    # Fetch quiz history with related data
     quiz_scores = Score.query.filter_by(user_id=user_id).join(Quiz).all()
     
-    quiz_history = [{
-    "quiz_name": score.quiz.quiz_title if score.quiz else "Unknown Quiz",  # Update this line
-    "date": score.time_stamp_of_attempt.strftime('%Y-%m-%d'),
-    "score": score.total_scored
-    } for score in quiz_scores]
-
+    # Process quiz history
+    quiz_history = []
+    subject_scores = {}
+    monthly_scores = {}
+    
+    for score in quiz_scores:
+        # Get quiz details
+        quiz = score.quiz
+        chapter = quiz.chapter if quiz else None
+        subject = chapter.subject if chapter else None
+        
+        # Create a descriptive quiz name based on chapter name and quiz date
+        quiz_name = f"Quiz on {chapter.name}" if chapter else "Quiz"
+        if quiz and quiz.date_of_quiz:
+            quiz_name += f" ({quiz.date_of_quiz.strftime('%b %d, %Y')})"
+        
+        # Calculate pass/fail status (assuming 60% is passing)
+        passing_threshold = 60
+        status = "Passed" if score.total_scored >= passing_threshold else "Failed"
+        
+        # Format quiz history entry
+        quiz_entry = {
+            "quiz_name": quiz_name,
+            "subject": subject.name if subject else "Unknown Subject",
+            "chapter": chapter.name if chapter else "Unknown Chapter",
+            "date": score.time_stamp_of_attempt.strftime('%Y-%m-%d'),
+            "score": score.total_scored,
+            "status": status
+        }
+        quiz_history.append(quiz_entry)
+        
+        # Track scores by subject
+        if subject:
+            subject_name = subject.name
+            if subject_name not in subject_scores:
+                subject_scores[subject_name] = {"total": 0, "count": 0, "average": 0}
+            subject_scores[subject_name]["total"] += score.total_scored
+            subject_scores[subject_name]["count"] += 1
+        
+        # Track scores by month
+        month_key = score.time_stamp_of_attempt.strftime('%b %Y')
+        if month_key not in monthly_scores:
+            monthly_scores[month_key] = {"total": 0, "count": 0}
+        monthly_scores[month_key]["total"] += score.total_scored
+        monthly_scores[month_key]["count"] += 1
+    
+    # Calculate averages for subjects
+    for subject in subject_scores:
+        if subject_scores[subject]["count"] > 0:
+            subject_scores[subject]["average"] = round(
+                subject_scores[subject]["total"] / subject_scores[subject]["count"], 2
+            )
+    
+    # Calculate monthly averages
+    monthly_averages = {}
+    for month in monthly_scores:
+        if monthly_scores[month]["count"] > 0:
+            monthly_averages[month] = round(
+                monthly_scores[month]["total"] / monthly_scores[month]["count"], 2
+            )
+    
+    # Calculate statistics
+    total_quizzes = len(quiz_history)
+    passed_quizzes = sum(1 for quiz in quiz_history if quiz["status"] == "Passed")
+    failed_quizzes = total_quizzes - passed_quizzes
+    pass_rate = round((passed_quizzes / total_quizzes) * 100, 2) if total_quizzes > 0 else 0
+    average_score = round(sum(quiz["score"] for quiz in quiz_history) / total_quizzes, 2) if total_quizzes > 0 else 0
+    
+    # Format response data
     response_data = {
-        "full_name": user.full_name,
-        "username": user.username,
-        "qualification": user.qualification or "N/A",
-        "dob": user.dob.strftime('%Y-%m-%d') if user.dob else "N/A",
-        "quiz_scores": quiz_history,
-        "average_score": round(sum(s["score"] for s in quiz_history) / len(quiz_history), 2) if quiz_history else 0
+        "user_info": {
+            "full_name": user.full_name,
+            "username": user.username,
+            "qualification": user.qualification or "N/A",
+            "dob": user.dob.strftime('%Y-%m-%d') if user.dob else "N/A",
+            "joined_date": "N/A"  # Add this field if available in your User model
+        },
+        "statistics": {
+            "total_quizzes": total_quizzes,
+            "passed_quizzes": passed_quizzes,
+            "failed_quizzes": failed_quizzes,
+            "pass_rate": pass_rate,
+            "average_score": average_score
+        },
+        "quiz_history": quiz_history,
+        "subject_averages": subject_scores,
+        "monthly_averages": monthly_averages
     }
 
     return jsonify(response_data)

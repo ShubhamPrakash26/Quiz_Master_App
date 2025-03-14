@@ -2,3 +2,4 @@
 venv
 __pycache__/
  controllers/__pycache__/
+controllers/__pycache__/admin.cpython-311.pyc
