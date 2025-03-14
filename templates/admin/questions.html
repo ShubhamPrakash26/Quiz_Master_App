@@ -13,39 +13,50 @@
     </div>
 
     <!-- Questions List -->
-    <div class="card">
-        <div class="card-body">
-            {% for question in questions %}
-            <div class="question-card mb-4">
-                <div class="d-flex justify-content-between align-items-start">
-                    <h5 class="mb-3">Question {{ loop.index }}</h5>
+<div class="card shadow-sm">
+    <div class="card-body p-0">
+        {% for question in questions %}
+            <div class="question-container p-3 mb-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="m-0">Question {{ loop.index }}</h5>
                     <div>
-                        <button class="btn btn-sm btn-warning" onclick="editQuestion({{ quiz.id }}, {{ question.id }})">Edit</button>
+                        <a href="{{ url_for('admin.edit_question', quiz_id=quiz.id, question_id=question.id) }}" 
+                           class="btn btn-warning">Edit</a>
                         <a href="{{ url_for('admin.delete_question', quiz_id=quiz.id, question_id=question.id) }}"
-                           class="btn btn-sm btn-danger"
+                           class="btn btn-danger ms-2"
                            onclick="return confirm('Are you sure you want to delete this question?')">Delete</a>
                     </div>
                 </div>
-                <p class="mb-3">{{ question.question_statement }}</p>
+                
+                <p class="question-text mb-3">{{ question.question_statement }}</p>
+                
                 <div class="options-list">
-                    <div class="option {% if question.correct_option == 1 %}correct{% endif %}">
+                    <div class="option-item py-2 px-3 mb-2 rounded {% if question.correct_option == 1 %}correct{% endif %}">
                         1. {{ question.option1 }}
                     </div>
-                    <div class="option {% if question.correct_option == 2 %}correct{% endif %}">
+                    <div class="option-item py-2 px-3 mb-2 rounded {% if question.correct_option == 2 %}correct{% endif %}">
                         2. {{ question.option2 }}
                     </div>
-                    <div class="option {% if question.correct_option == 3 %}correct{% endif %}">
+                    <div class="option-item py-2 px-3 mb-2 rounded {% if question.correct_option == 3 %}correct{% endif %}">
                         3. {{ question.option3 }}
                     </div>
-                    <div class="option {% if question.correct_option == 4 %}correct{% endif %}">
+                    <div class="option-item py-2 px-3 mb-2 rounded {% if question.correct_option == 4 %}correct{% endif %}">
                         4. {{ question.option4 }}
                     </div>
                 </div>
             </div>
-            <hr>
-            {% endfor %}
-        </div>
+            
+            {% if not loop.last %}
+                <hr class="my-0">
+            {% endif %}
+        {% else %}
+            <div class="alert alert-info m-3">
+                No questions found for this quiz. Use the "Add New Question" button to create questions.
+            </div>
+        {% endfor %}
     </div>
+</div>
+
 
     <!-- Add Question Modal -->
     <div class="modal fade" id="addQuestionModal" tabindex="-1">
@@ -119,26 +130,38 @@ function editQuestion(quizId, questionId) {
 </script>
 
 <style>
-.question-card {
-    background-color: #f8f9fa;
-    padding: 1rem;
-    border-radius: 0.5rem;
+.question-container {
+    background-color: #fff;
+}
+
+.question-text {
+    font-size: 1rem;
 }
 
 .options-list {
-    margin-left: 1rem;
+    margin-left: 0.5rem;
 }
 
-.option {
-    margin: 0.5rem 0;
-    padding: 0.5rem;
-    border-radius: 0.25rem;
+.option-item {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
 }
 
-.option.correct {
+.option-item.correct {
     background-color: #d4edda;
     border-color: #c3e6cb;
-    color: #155724;
+}
+
+.btn-warning {
+    background-color: #ffc107;
+    border-color: #ffc107;
+    color: #212529;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    border-color: #dc3545;
+    color: #fff;
 }
 </style>
 {% endblock %}

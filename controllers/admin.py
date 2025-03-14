@@ -247,6 +247,15 @@ def manage_questions(quiz_id):
         return redirect(url_for('admin.manage_questions', quiz_id=quiz_id))
     
     questions = Question.query.filter_by(quiz_id=quiz_id).all()
+    
+    # Debug information
+    print(f"Questions found: {len(questions)}")
+    if questions:
+        for q in questions:
+            print(f"Question: {q.id} - {q.question_statement}")
+    else:
+        print("No questions found for this quiz")
+    
     return render_template('admin/questions.html', 
                          form=form, 
                          questions=questions, 

@@ -121,9 +121,19 @@ def get_subject_chapters(subject_id):
 @login_required
 def get_performance_data():
     scores = Score.query.filter_by(user_id=current_user.id).all()
-    data = [{
-        'quiz': score.quiz.chapter.name,
-        'score': score.total_scored,
-        'date': score.time_stamp_of_attempt.strftime('%Y-%m-%d')
-    } for score in scores]
+    
+    data = []
+    for score in scores:
+        # Get quiz and chapter information
+        quiz_name = score.quiz.chapter.name if score.quiz.chapter else "Unknown"
+        subject_name = score.quiz.chapter.subject.name if score.quiz.chapter and score.quiz.chapter.subject else "Unknown"
+        
+        data.append({
+            'id': score.id,
+            'quiz': f"{quiz_name} - {subject_name}",
+            'score': score.total_scored,
+            'date': score.time_stamp_of_attempt.strftime('%Y-%m-%d'),
+            'quiz_id': score.quiz_id
+        })
+    
     return jsonify(data)
